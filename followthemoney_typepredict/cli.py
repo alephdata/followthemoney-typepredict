@@ -11,6 +11,8 @@ from .transform import transform, clean_value
 
 
 DEFAULT = object()
+
+
 def check_file(fname, default=DEFAULT):
     if not path.exists(fname):
         if default is not DEFAULT:
@@ -24,9 +26,9 @@ def cli():
     pass
 
 
-@cli.command('create-training-data')
-@click.argument('input-data-files', nargs=-1, type=click.File('r'))
-@click.argument('output-dir', type=click.Path(file_okay=False, writable=True))
+@cli.command("create-training-data")
+@click.argument("input-data-files", nargs=-1, type=click.File("r"))
+@click.argument("output-dir", type=click.Path(file_okay=False, writable=True))
 def create_training_data(input_data_files, output_dir):
     """
     Given data files from `aleph sample-entities`, this command will output
@@ -38,14 +40,17 @@ def create_training_data(input_data_files, output_dir):
                 data = orjson.loads(line)
                 sampler.add_entity(data)
 
+
 @cli.command("train-model")
 @click.argument("data-dir", type=click.Path(readable=True, exists=True))
-@click.argument("model-file", type=click.Path(dir_okay=False, exists=False), required=True)
-@click.option('--tune', type=click.Path(dir_okay=False, exists=True))
-@click.option('--train', type=click.Path(dir_okay=False, exists=True))
-@click.option('--valid', type=click.Path(dir_okay=False, exists=True))
-@click.option('--quantize', type=click.Path(dir_okay=False, exists=True))
-@click.option('--tune-durration', type=int, default=600)
+@click.argument(
+    "model-file", type=click.Path(dir_okay=False, exists=False), required=True
+)
+@click.option("--tune", type=click.Path(dir_okay=False, exists=True))
+@click.option("--train", type=click.Path(dir_okay=False, exists=True))
+@click.option("--valid", type=click.Path(dir_okay=False, exists=True))
+@click.option("--quantize", type=click.Path(dir_okay=False, exists=True))
+@click.option("--tune-durration", type=int, default=600)
 def train_model(data_dir, model_file, tune, train, valid, quantize, tune_durration):
     """
     Train a model given the prepared data. If data-dir is provided, we look for the following files:
@@ -61,31 +66,38 @@ def train_model(data_dir, model_file, tune, train, valid, quantize, tune_durrati
     """
     has_files = bool(tune and train and valid and quantize)
     if not bool(data_dir) ^ has_files:
-        raise ValueError('Must supply one of: data_dir OR individual files')
+        raise ValueError("Must supply one of: data_dir OR individual files")
     elif data_dir:
         data_dir = Path(data_dir)
-        train = check_file(data_dir / 'train.txt')
-        valid = check_file(data_dir / 'valid.txt')
-        quantize = check_file(data_dir / 'quantize.txt', train)
-        tune = check_file(data_dir / 'tune.txt', valid)
+        train = check_file(data_dir / "train.txt")
+        valid = check_file(data_dir / "valid.txt")
+        quantize = check_file(data_dir / "quantize.txt", train)
+        tune = check_file(data_dir / "tune.txt", valid)
 
     model = Model()
-    results = model.fit(tune=tune, train=train, valid=valid, quantize=quantize, tune_durration=tune_durration)
+    results = model.fit(
+        tune=tune,
+        train=train,
+        valid=valid,
+        quantize=quantize,
+        tune_durration=tune_durration,
+    )
     model.save(model_file)
-    print("Model Results:")
-    pprint(results)
 
 
 @cli.command("evaluate-model")
-@click.argument("model-file", type=click.Path(dir_okay=False, exists=True), required=True)
-@click.argument("data-file", type=click.Path(dir_okay=False, exists=True), required=True)
-@click.option("--results-file", type=click.File('wb'), default='-')
-@click.option("--plot", type=click.Path(dir_okay=False), default='./evaluate-model.png')
+@click.argument(
+    "model-file", type=click.Path(dir_okay=False, exists=True), required=True
+)
+@click.argument(
+    "data-file", type=click.Path(dir_okay=False, exists=True), required=True
+)
+@click.option("--results-file", type=click.File("wb"), default="-")
+@click.option("--plot", type=click.Path(dir_okay=False), default="./evaluate-model.png")
 def evaluate_model(model_file, data_file, results_file, plot):
     model = Model.load(model_file)
     results = model.evaluate(data_file)
-    print(results_file.name)
-    if results_file.name == '<stdout>':
+    if results_file.name == "<stdout>":
         pprint(results)
     else:
         results_file.write(orjson.dumps(results))
@@ -98,9 +110,11 @@ def evaluate_model(model_file, data_file, results_file, plot):
 
 
 @cli.command("test-model")
-@click.argument("model-file", type=click.Path(dir_okay=False, exists=True), required=True)
-@click.argument("data-file", type=click.File('r'), default='-')
-@click.option('--n-labels', type=int, default=-1)
+@click.argument(
+    "model-file", type=click.Path(dir_okay=False, exists=True), required=True
+)
+@click.argument("data-file", type=click.File("r"), default="-")
+@click.option("--n-labels", type=int, default=-1)
 def test_model(model_file, data_file, n_labels):
     model = Model.load(model_file)
     for line in data_file:
