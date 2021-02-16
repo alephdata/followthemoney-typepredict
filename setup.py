@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="followthemoney-typepredict",
-    version="0.0.1",
+    version="0.0.2",
     long_description="Followthemoney Type Prediction",
     classifiers=[
         "Development Status :: 3 - Alpha",
