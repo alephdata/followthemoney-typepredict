@@ -42,10 +42,10 @@ def create_training_data(input_data_files, output_dir):
 
 
 @cli.command("train-model")
-@click.argument("data-dir", type=click.Path(readable=True, exists=True))
 @click.argument(
     "model-file", type=click.Path(dir_okay=False, exists=False), required=True
 )
+@click.option("--data-dir", type=click.Path(readable=True, exists=True))
 @click.option("--tune", type=click.Path(dir_okay=False, exists=True))
 @click.option("--train", type=click.Path(dir_okay=False, exists=True))
 @click.option("--valid", type=click.Path(dir_okay=False, exists=True))
