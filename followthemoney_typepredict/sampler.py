@@ -101,7 +101,7 @@ class ResevourSampler:
         if len(self) >= self.limit:
             i = random.randint(0, self._n_seen)
             if i < len(self):
-                self._dedupe.discard(self.values[i][1])
+                self._dedupe.discard(self._values[i][1])
                 self._values[i] = (collection_id, value)
                 self._dedupe.add(value)
             return False

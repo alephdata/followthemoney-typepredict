@@ -1,0 +1,26 @@
+name: build
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Show ref
+        run: |
+          docker --version
+          docker-compose --version
+          echo "$GITHUB_REF"
+      - name: Set image name
+        uses: allenevans/set-env@v2.0.0
+        with:
+          IMAGE: ghcr.io/alephdata/followthemoney-typepredict
+      - name: Build docker image
+        run: |
+          docker build -t $IMAGE .
+          docker build -t $IMAGE:$GITHUB_SHA .
+      - name: Push docker image
+        run: |
+          echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          docker push $IMAGE
+          docker push $IMAGE:$GITHUB_SHA
