@@ -106,7 +106,7 @@ def evaluate_model(model_file, data_file, results_file, plot):
             fig = model.plot(data_file)
             fig.savefig(plot, dpi=300)
         except ImportError as e:
-            click.echo("Couldn't plot model: {e}")
+            click.echo(f"Couldn't plot model: {e}")
 
 
 @cli.command("test-model")

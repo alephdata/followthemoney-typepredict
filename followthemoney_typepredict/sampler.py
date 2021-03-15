@@ -3,6 +3,7 @@ from itertools import islice
 from pathlib import Path
 
 from followthemoney import model
+from .transform import clean_value
 
 
 DEFAULT_FIELDS_LIMIT = {
@@ -101,11 +102,13 @@ class ResevourSampler:
         if len(self) >= self.limit:
             i = random.randint(0, self._n_seen)
             if i < len(self):
+                value = clean_value(value)
                 self._dedupe.discard(self._values[i][1])
                 self._values[i] = (collection_id, value)
                 self._dedupe.add(value)
             return False
         else:
+            value = clean_value(value)
             self._values.append((collection_id, value))
             self._dedupe.add(value)
             return True

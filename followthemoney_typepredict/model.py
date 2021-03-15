@@ -1,16 +1,6 @@
 from pprint import pprint
 import fasttext
 
-try:
-    import seaborn as sn
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    from sklearn.metrics import confusion_matrix
-
-    ANALYSIS_MODULES = True
-except ImportError:
-    ANALYSIS_MODULES = False
-
 
 class Model:
     def __init__(self, model=None):
@@ -52,9 +42,14 @@ class Model:
         return self.model.test_label(str(data))
 
     def plot(self, data):
-        if not ANALYSIS_MODULES:
+        try:
+            import seaborn as sn
+            import pandas as pd
+            import matplotlib.pyplot as plt
+            from sklearn.metrics import confusion_matrix
+        except ImportError:
             raise ImportError("Analysis modules not installed")
-        elif self.model is None:
+        if self.model is None:
             raise ValueError("Cannot plot untrained model")
         y_X = [list(map(str.strip, line.split(" ", 1))) for line in open(data)]
         y, X = zip(*y_X)

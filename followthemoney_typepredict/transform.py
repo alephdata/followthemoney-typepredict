@@ -38,7 +38,7 @@ def transform_proxy(proxy, fields, skip_schemas=DEFAULT_SKIP_SCHEMAS):
         else:
             prop = registry.get(field)
             data = proxy.get_type_values(prop)
-        yield from ((field, clean_value(value)) for value in data)
+        yield from ((field, value) for value in data)
 
 
 def generate_trash(proxy):
